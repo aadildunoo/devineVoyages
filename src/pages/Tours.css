@@ -1,0 +1,258 @@
+/* =====================================================
+   Tours Page Styles
+   ===================================================== */
+
+.tours-hero {
+  background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon) 50%, var(--saffron-dark) 100%);
+  padding: var(--space-16) 0 var(--space-12);
+  text-align: center;
+}
+
+.tours-hero h1 {
+  color: white;
+  margin-bottom: var(--space-3);
+}
+
+.tours-hero p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--text-lg);
+}
+
+.tours-page {
+  padding-top: var(--space-8);
+}
+
+/* Toolbar */
+.tours-toolbar {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.tours-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast);
+}
+
+.tours-search:focus-within {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(255, 107, 43, 0.1);
+}
+
+.tours-search svg {
+  color: var(--slate-400);
+}
+
+.tours-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: var(--text-sm);
+  color: var(--slate-700);
+  background: transparent;
+}
+
+.tours-search input::placeholder {
+  color: var(--slate-400);
+}
+
+.tours-toolbar-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.tours-filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tours-filter-toggle:hover {
+  border-color: var(--saffron);
+  color: var(--saffron);
+}
+
+.tours-sort {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  font-size: var(--text-sm);
+  color: var(--slate-600);
+  cursor: pointer;
+  outline: none;
+}
+
+.tours-sort:focus {
+  border-color: var(--saffron);
+}
+
+/* Filters Panel */
+.tours-filters {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  animation: fadeIn 0.2s ease;
+}
+
+.tours-filter-group {
+  margin-bottom: var(--space-4);
+}
+
+.tours-filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.tours-filter-group label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-bottom: var(--space-3);
+}
+
+.tours-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tours-filter-chip {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-full);
+  background: white;
+  font-size: var(--text-sm);
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tours-filter-chip:hover {
+  border-color: var(--saffron);
+  color: var(--saffron);
+}
+
+.tours-filter-chip.active {
+  background: var(--saffron);
+  color: white;
+  border-color: var(--saffron);
+}
+
+/* Active Filters Bar */
+.tours-active-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--saffron-50);
+  border-radius: var(--radius-lg);
+}
+
+.tours-results-count {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--slate-700);
+  white-space: nowrap;
+}
+
+.tours-active-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.tours-active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 12px;
+  background: white;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--saffron-dark);
+}
+
+.tours-active-chip svg {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.tours-active-chip svg:hover {
+  opacity: 1;
+}
+
+.tours-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--saffron);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--saffron);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.tours-clear-btn:hover {
+  background: var(--saffron);
+  color: white;
+}
+
+/* Empty State */
+.tours-empty {
+  text-align: center;
+  padding: var(--space-16) 0;
+}
+
+.tours-empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-4);
+}
+
+.tours-empty h3 {
+  margin-bottom: var(--space-2);
+  color: var(--slate-700);
+}
+
+.tours-empty p {
+  color: var(--slate-500);
+  margin-bottom: var(--space-6);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tours-toolbar {
+    flex-direction: column;
+  }
+
+  .tours-active-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

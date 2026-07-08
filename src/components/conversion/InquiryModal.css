@@ -1,0 +1,120 @@
+.inquiry-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.2s ease;
+}
+
+.inquiry-modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-2xl);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inquiry-modal-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: var(--slate-100);
+  border: none;
+  color: var(--slate-500);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.inquiry-modal-close:hover {
+  background: var(--slate-200);
+  color: var(--slate-800);
+}
+
+.inquiry-modal-title {
+  font-size: var(--text-2xl);
+  color: var(--slate-900);
+  margin-bottom: var(--space-2);
+}
+
+.inquiry-modal-subtitle {
+  color: var(--slate-500);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+.inquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.inquiry-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.inquiry-field label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--slate-700);
+}
+
+.inquiry-field input,
+.inquiry-field textarea {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--slate-700);
+  background: white;
+  transition: border-color var(--transition-fast);
+  outline: none;
+  resize: vertical;
+}
+
+.inquiry-field input:focus,
+.inquiry-field textarea:focus {
+  border-color: var(--saffron);
+  box-shadow: 0 0 0 3px rgba(255, 107, 43, 0.1);
+}
+
+/* Success */
+.inquiry-success {
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+.inquiry-success-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+}
+
+.inquiry-success h3 {
+  color: var(--slate-900);
+  margin-bottom: var(--space-3);
+}
+
+.inquiry-success p {
+  color: var(--slate-500);
+  margin-bottom: var(--space-6);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

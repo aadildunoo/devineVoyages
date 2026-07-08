@@ -1,0 +1,188 @@
+/* Gallery Page */
+
+.gallery-hero {
+  background: linear-gradient(135deg, var(--maroon-dark), var(--maroon), var(--saffron-dark));
+  padding: var(--space-16) 0 var(--space-12);
+  text-align: center;
+}
+.gallery-hero h1 { color: white; margin-bottom: var(--space-3); }
+.gallery-hero p { color: rgba(255,255,255,0.7); font-size: var(--text-lg); }
+
+.gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-bottom: var(--space-10);
+}
+
+.gallery-filter {
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-full);
+  background: white;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--slate-600);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.gallery-filter:hover { border-color: var(--saffron); color: var(--saffron); }
+.gallery-filter.active { background: var(--saffron); color: white; border-color: var(--saffron); }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 250px;
+  gap: var(--space-4);
+}
+
+/* Different sizes for masonry feel */
+.gallery-item:nth-child(3n) { grid-column: span 2; grid-row: span 2; }
+.gallery-item:nth-child(5n) { grid-row: span 2; }
+
+@media (max-width: 768px) {
+  .gallery-item:nth-child(3n), .gallery-item:nth-child(5n) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gallery-item-bg {
+  width: 100%;
+  height: 100%;
+  transition: transform var(--transition-slow);
+}
+
+.gallery-item:hover .gallery-item-bg {
+  transform: scale(1.05);
+}
+
+.gallery-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-5);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.gallery-item:hover .gallery-item-overlay { opacity: 1; }
+
+.gallery-item-overlay h4 { color: white; margin-bottom: 2px; }
+.gallery-item-overlay p { color: rgba(255,255,255,0.7); font-size: var(--text-sm); }
+
+.gallery-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.gallery-item:hover .gallery-play-btn { background: var(--saffron); transform: translate(-50%, -50%) scale(1.1); }
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-6);
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+  z-index: 1;
+}
+
+.lightbox-close:hover { opacity: 1; }
+
+.lightbox-content {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.lightbox-media {
+  width: 100%;
+  height: 60vh;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-caption {
+  padding-top: var(--space-4);
+  text-align: center;
+  color: white;
+}
+
+.lightbox-caption p {
+  color: rgba(255,255,255,0.6);
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.lightbox-nav:hover { background: var(--saffron); }
+.lightbox-prev { left: -70px; }
+.lightbox-next { right: -70px; }
+
+@media (max-width: 1200px) {
+  .lightbox-nav { display: none; /* Hide on smaller screens */ }
+}
