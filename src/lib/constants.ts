@@ -6,8 +6,9 @@ export const SITE_CONFIG = {
   description: 'India\'s premier spiritual travel company offering curated pilgrimage tours, temple visits, and sacred journeys across the subcontinent.',
   url: 'https://devinevoyages.com',
   phone: '+1 (416) 450-0089',
+  indiaPhone: '+91 96509 61142',
   whatsapp: '+14164500089',
-  address: '42, Spiritual Lane, Rishikesh, Uttarakhand 249201, India',
+  address: 'Main Office: Mississauga, ON | Branch Office: New Delhi, India',
   social: {
     instagram: 'https://instagram.com/devinevoyages',
     facebook: 'https://www.facebook.com/people/India-Vacanza/100063871487881/',

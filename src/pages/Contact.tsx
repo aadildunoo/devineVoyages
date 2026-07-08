@@ -189,7 +189,10 @@ export function Contact() {
                 <div className="contact-info-icon"><Phone size={22} /></div>
                 <div>
                   <h4>Call Us</h4>
-                  <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phone}</a>
+                  <div className="flex flex-col mb-2">
+                    <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phone} (Canada)</a>
+                    <a href={`tel:${SITE_CONFIG.indiaPhone}`}>{SITE_CONFIG.indiaPhone} (India)</a>
+                  </div>
                   <p>Mon-Sat: 9:00 AM - 6:00 PM</p>
                 </div>
               </motion.div>

@@ -88,8 +88,11 @@ export function Footer() {
                   <span>{SITE_CONFIG.address}</span>
                 </li>
                 <li>
-                  <Phone size={16} />
-                  <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phone}</a>
+                  <Phone size={16} className="mt-1 flex-shrink-0" />
+                  <div className="flex flex-col gap-1">
+                    <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phone} (Canada)</a>
+                    <a href={`tel:${SITE_CONFIG.indiaPhone}`}>{SITE_CONFIG.indiaPhone} (India)</a>
+                  </div>
                 </li>
               </ul>
               <div className="footer-trust">
