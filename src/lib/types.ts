@@ -37,6 +37,7 @@ export interface ItineraryDay {
   description: string;
   meals: string[];
   accommodation?: string;
+  image?: string;
 }
 
 export interface TourDate {

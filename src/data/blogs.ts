@@ -10,7 +10,7 @@ export const blogPosts: BlogPost[] = [
     content: 'The Char Dham Yatra is considered the most sacred pilgrimage in Hinduism...',
     author: team[0],
     category: 'Travel Guide',
-    image: 'https://images.unsplash.com/photo-1581450257329-aebba8140be0?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&q=80&w=800',
     publishedAt: '2026-06-15',
     readTime: 12,
     tags: ['Char Dham', 'Travel Guide', 'Uttarakhand', 'Pilgrimage'],

@@ -1,24 +1,32 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, X, SlidersHorizontal } from 'lucide-react';
-import { TourCard } from '@/components/tours/TourCard';
+import { Search, Filter, X, Heart } from 'lucide-react';
+import { ListingCard } from '@/components/tours/ListingCard';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { CategoryFilter } from '@/components/common/CategoryFilter';
+import { MapToggle } from '@/components/common/MapToggle';
 import { Button } from '@/components/ui/Button';
 import { tours } from '@/data/tours';
-import { TOUR_CATEGORIES } from '@/lib/constants';
+import { useWishlist } from '@/context/WishlistContext';
 import './Tours.css';
 
 export function Tours() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('destination') || '');
   const [showFilters, setShowFilters] = useState(false);
+  const { wishlist } = useWishlist();
 
-  const activeCategory = searchParams.get('category') || '';
+  const activeCategory = searchParams.get('category') || 'All';
   const activeDifficulty = searchParams.get('difficulty') || '';
   const activeSortBy = searchParams.get('sort') || 'popular';
+  const isWishlistOnly = searchParams.get('wishlist') === 'true';
 
   const filteredTours = useMemo(() => {
     let result = [...tours];
+
+    if (isWishlistOnly) {
+      result = result.filter(t => wishlist.includes(t.id));
+    }
 
     if (search) {
       const q = search.toLowerCase();
@@ -29,7 +37,7 @@ export function Tours() {
       );
     }
 
-    if (activeCategory) {
+    if (activeCategory && activeCategory !== 'All') {
       result = result.filter(t => t.category === activeCategory);
     }
 
@@ -55,7 +63,7 @@ export function Tours() {
     }
 
     return result;
-  }, [search, activeCategory, activeDifficulty, activeSortBy]);
+  }, [search, activeCategory, activeDifficulty, activeSortBy, isWishlistOnly, wishlist]);
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -72,103 +80,80 @@ export function Tours() {
     setSearch('');
   };
 
-  const hasActiveFilters = activeCategory || activeDifficulty || search;
+  const hasActiveFilters = (activeCategory !== 'All') || activeDifficulty || search || isWishlistOnly;
 
   return (
     <>
       <SEOHead
-        title="Sacred Tours & Pilgrimage Packages"
-        description="Browse our curated collection of spiritual tours across India. Char Dham Yatra, Jyotirlinga tours, temple visits, yoga retreats & more. Book your divine journey today!"
+        title="Explore All Sacred Stays & Yatras"
+        description="Browse our curated collection of spiritual stays & pilgrimage tours across India. Char Dham Yatra, Jyotirlinga tours, temple stays, yoga retreats & more."
         canonical="/tours"
       />
 
-      {/* Page Header */}
-      <section className="tours-hero">
-        <div className="container">
-          <h1>Sacred Tours & Pilgrimages</h1>
-          <p>Curated spiritual journeys to India's most divine destinations</p>
-        </div>
-      </section>
+      <CategoryFilter 
+        activeCategory={activeCategory} 
+        onSelectCategory={(cat) => updateFilter('category', cat)}
+        onOpenFilterModal={() => setShowFilters(!showFilters)}
+      />
 
-      <section className="tours-page section">
+      <section className="tours-page-section">
         <div className="container">
-          {/* Search & Filter Bar */}
+          {/* TOOLBAR */}
           <div className="tours-toolbar">
             <div className="tours-search">
               <Search size={18} />
               <input
                 type="text"
-                placeholder="Search tours by name, destination, or category..."
+                placeholder="Search stays, destinations, or yatras..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                id="tour-search"
               />
+              {search && (
+                <button type="button" className="clear-search-btn" onClick={() => setSearch('')}>
+                  <X size={14} />
+                </button>
+              )}
             </div>
+
             <div className="tours-toolbar-actions">
-              <button
-                className="tours-filter-toggle"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <SlidersHorizontal size={18} />
-                Filters
-              </button>
+              {wishlist.length > 0 && (
+                <button
+                  type="button"
+                  className={`tours-wishlist-toggle ${isWishlistOnly ? 'active' : ''}`}
+                  onClick={() => updateFilter('wishlist', isWishlistOnly ? '' : 'true')}
+                >
+                  <Heart size={16} fill={isWishlistOnly ? '#FF385C' : 'none'} color={isWishlistOnly ? '#FF385C' : '#222'} />
+                  <span>Wishlist ({wishlist.length})</span>
+                </button>
+              )}
+
               <select
                 value={activeSortBy}
                 onChange={(e) => updateFilter('sort', e.target.value)}
-                className="tours-sort"
-                id="tour-sort"
+                className="tours-sort-select"
               >
                 <option value="popular">Most Popular</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="rating">Highest Rated</option>
-                <option value="duration">Shortest First</option>
+                <option value="duration">Shortest Duration</option>
               </select>
             </div>
           </div>
 
-          {/* Filter Panel */}
-          {showFilters && (
-            <div className="tours-filters">
-              <div className="tours-filter-group">
-                <label>Category</label>
-                <div className="tours-filter-chips">
-                  {TOUR_CATEGORIES.map(cat => (
-                    <button
-                      key={cat}
-                      className={`tours-filter-chip ${activeCategory === cat ? 'active' : ''}`}
-                      onClick={() => updateFilter('category', activeCategory === cat ? '' : cat)}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="tours-filter-group">
-                <label>Difficulty</label>
-                <div className="tours-filter-chips">
-                  {['Easy', 'Moderate', 'Challenging'].map(d => (
-                    <button
-                      key={d}
-                      className={`tours-filter-chip ${activeDifficulty === d ? 'active' : ''}`}
-                      onClick={() => updateFilter('difficulty', activeDifficulty === d ? '' : d)}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Active Filters */}
+          {/* ACTIVE FILTER TAGS */}
           {hasActiveFilters && (
             <div className="tours-active-filters">
-              <span className="tours-results-count">{filteredTours.length} tours found</span>
+              <span className="tours-results-count">{filteredTours.length} stays & tours found</span>
               <div className="tours-active-chips">
-                {activeCategory && (
+                {isWishlistOnly && (
                   <span className="tours-active-chip">
-                    {activeCategory} <X size={14} onClick={() => updateFilter('category', '')} />
+                    Wishlist Only <X size={14} onClick={() => updateFilter('wishlist', '')} />
+                  </span>
+                )}
+                {activeCategory !== 'All' && (
+                  <span className="tours-active-chip">
+                    {activeCategory} <X size={14} onClick={() => updateFilter('category', 'All')} />
                   </span>
                 )}
                 {activeDifficulty && (
@@ -188,23 +173,25 @@ export function Tours() {
             </div>
           )}
 
-          {/* Tour Grid */}
+          {/* TOUR LISTINGS GRID */}
           {filteredTours.length > 0 ? (
-            <div className="tours-grid">
+            <div className="airbnb-listings-grid">
               {filteredTours.map(tour => (
-                <TourCard key={tour.id} tour={tour} />
+                <ListingCard key={tour.id} tour={tour} />
               ))}
             </div>
           ) : (
             <div className="tours-empty">
               <div className="tours-empty-icon">🔍</div>
-              <h3>No tours found</h3>
-              <p>Try adjusting your filters or search terms</p>
-              <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
+              <h3>No stays or yatras found</h3>
+              <p>Try clearing filters or searching for another sacred destination.</p>
+              <Button variant="outline" onClick={clearFilters}>Clear All Filters</Button>
             </div>
           )}
         </div>
       </section>
+
+      <MapToggle tours={tours} />
     </>
   );
 }

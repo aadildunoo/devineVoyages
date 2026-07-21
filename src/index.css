@@ -29,6 +29,15 @@
   --maroon-light: #7A2E3F;
   --maroon-dark: #3D0F1C;
 
+  /* Airbnb Palette & Accent */
+  --airbnb-coral: #FF385C;
+  --airbnb-coral-dark: #E00B41;
+  --airbnb-border: #DDDDDD;
+  --airbnb-border-light: #EBEBEB;
+  --airbnb-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --airbnb-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --airbnb-bg-subtle: #F7F7F7;
+
   /* Neutrals */
   --warm-white: #FFF9F0;
   --cream: #FAF5EB;

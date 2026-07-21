@@ -1,0 +1,205 @@
+.floating-map-toggle-wrap {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 180;
+}
+
+.map-toggle-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #222222;
+  color: #ffffff;
+  padding: 14px 22px;
+  border-radius: 30px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), background-color 0.15s ease;
+}
+
+.map-toggle-pill:hover {
+  transform: translateX(-50%) scale(1.06);
+  background: #000000;
+}
+
+.map-view-overlay {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 350;
+  display: flex;
+  flex-direction: column;
+  animation: mapModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mapModalIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.map-overlay-header {
+  height: 64px;
+  padding: 0 24px;
+  border-bottom: 1px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-title {
+  font-size: 18px;
+  color: #222222;
+
+}
+
+.map-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #222222;
+  cursor: pointer;
+}
+
+.map-container-mock {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #eef3f8 0%, #dce5ee 100%);
+  position: relative;
+}
+
+.map-watermark {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.map-price-pin {
+  position: absolute;
+  background: #ffffff;
+  color: #222222;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  transform: translate(-50%, -50%);
+}
+
+.map-price-pin:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  background: #222222;
+  color: #ffffff;
+  z-index: 20;
+}
+
+.map-selected-card {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 30;
+  animation: cardPopup 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardPopup {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.card-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.map-card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.map-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.map-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+
+}
+
+.map-card-sub {
+  font-size: 12px;
+  color: #717171;
+}
+
+.map-card-price {
+  font-size: 13px;
+  color: #222222;
+  margin-top: 4px;
+}
+
+.map-card-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--airbnb-coral, #ff385c);
+  color: #ffffff;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}

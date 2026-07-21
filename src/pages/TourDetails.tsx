@@ -1,38 +1,39 @@
-import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import {
-  MapPin,
-  Clock,
-  Users,
-  Star,
-  ChevronDown,
-  ChevronUp,
-  Check,
-  X,
-  Calendar,
-  Utensils,
-  Building2,
-  Bus,
-  Phone,
-} from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { DifficultyBadge } from "@/components/ui/Badge";
-import { TourCard } from "@/components/tours/TourCard";
-import { SEOHead } from "@/components/seo/SEOHead";
-import { InquiryModal } from "@/components/conversion/InquiryModal";
-import { getTourBySlug, tours } from "@/data/tours";
-import { SITE_CONFIG } from "@/lib/constants";
-import "./TourDetails.css";
+import { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { 
+  MapPin, 
+  Star, 
+  Heart, 
+  Share2, 
+  Check, 
+  X, 
+  Utensils, 
+  Building2, 
+  Bus, 
+  Phone, 
+  Award, 
+  Grid, 
+  UserCheck 
+} from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { SEOHead } from '@/components/seo/SEOHead';
+import { InquiryModal } from '@/components/conversion/InquiryModal';
+import { ListingCard } from '@/components/tours/ListingCard';
+import { getTourBySlug, tours } from '@/data/tours';
+import { useWishlist } from '@/context/WishlistContext';
+import { SITE_CONFIG } from '@/lib/constants';
+import './TourDetails.css';
 
 export function TourDetails() {
   const { slug } = useParams<{ slug: string }>();
-  const tour = getTourBySlug(slug || "");
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "itinerary" | "inclusions" | "dates"
-  >("overview");
-  const [openDay, setOpenDay] = useState<number | null>(1);
+  const tour = getTourBySlug(slug || '');
+  const { isInWishlist, toggleWishlist } = useWishlist();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showPhotoLightbox, setShowPhotoLightbox] = useState(false);
+  const [activePhotoIdx, setActivePhotoIdx] = useState(0);
+  const [guestCount, setGuestCount] = useState(1);
+  const [selectedDateIndex, setSelectedDateIndex] = useState(0);
 
   if (!tour) {
     return (
@@ -40,405 +41,416 @@ export function TourDetails() {
         <h2>Tour Not Found</h2>
         <p>The tour you're looking for doesn't exist.</p>
         <Link to="/tours">
-          <Button variant="primary">
-            Browse All Tours
-          </Button>
+          <Button variant="primary">Browse All Tours</Button>
         </Link>
       </div>
     );
   }
-  const relatedTours = tours
-    .filter(
-      (t) =>
-        t.category === tour.category && t.id !== tour.id,
-    )
-    .slice(0, 3);
+
+  const allPhotos = [tour.heroImage, ...(tour.images || [])].filter(Boolean);
+  const isWishlisted = isInWishlist(tour.id);
+  const relatedTours = tours.filter((t) => t.category === tour.category && t.id !== tour.id).slice(0, 4);
+
+  const basePrice = tour.price.discounted;
+  const totalPrice = basePrice * guestCount;
 
   const tourSchema = {
-    "@context": "https://schema.org",
-    "@type": "TouristTrip",
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
     name: tour.title,
     description: tour.description,
-    touristType: "Pilgrimage",
     provider: {
-      "@type": "TravelAgency",
+      '@type': 'TravelAgency',
       name: SITE_CONFIG.name,
       telephone: SITE_CONFIG.phone,
     },
     offers: {
-      "@type": "Offer",
+      '@type': 'Offer',
       price: tour.price.discounted,
-      priceCurrency: "INR",
+      priceCurrency: 'INR',
     },
   };
 
   return (
     <>
       <SEOHead
-        title={tour.title}
+        title={`${tour.title} — Airbnb-Style Sacred Stay`}
         description={tour.shortDescription}
         canonical={`/tours/${tour.slug}`}
         schema={tourSchema}
       />
 
-      {/* Breadcrumb */}
-      <nav className="breadcrumb" aria-label="Breadcrumb">
+      <div className="tour-detail-page-wrapper">
         <div className="container">
-          <Link to="/">Home</Link>
-          <span>/</span>
-          <Link to="/tours">Tours</Link>
-          <span>/</span>
-          <span className="breadcrumb-current">
-            {tour.title}
-          </span>
-        </div>
-      </nav>
+          {/* TITLE & HEADER BAR */}
+          <div className="td-header-top">
+            <h1 className="td-main-title">{tour.title}</h1>
+            <div className="td-sub-bar">
+              <div className="td-sub-info">
+                <span className="td-rating-chip">
+                  <Star size={16} fill="#222" color="#222" />
+                  <strong>{tour.rating.toFixed(2)}</strong>
+                  <span className="td-review-count">({tour.reviewCount} reviews)</span>
+                </span>
+                <span className="td-dot">•</span>
+                {tour.rating >= 4.8 && (
+                  <>
+                    <span className="td-badge-favorite">
+                      <Award size={14} /> Guest favorite
+                    </span>
+                    <span className="td-dot">•</span>
+                  </>
+                )}
+                <span className="td-location-link">
+                  <MapPin size={15} /> {tour.destination}, {tour.state}, India
+                </span>
+              </div>
 
-      {/* Tour Hero */}
-      <section className="td-hero">
-        {tour.heroImage ? (
-          <img 
-            src={tour.heroImage} 
-            alt={tour.title} 
-            className="td-hero-bg"
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-          />
-        ) : (
-          <div
-            className="td-hero-bg"
-            style={{
-              background: `linear-gradient(135deg, ${getCategoryGradient(tour.category)})`,
-            }}>
-            <div className="td-hero-icon">🕉️</div>
-          </div>
-        )}
-        <div className="td-hero-overlay" />
-        <div className="td-hero-content container">
-          <div className="td-hero-badges">
-            <DifficultyBadge difficulty={tour.difficulty} />
-            <span className="td-hero-category">
-              {tour.category}
-            </span>
-          </div>
-          <h1>{tour.title}</h1>
-          <p className="td-hero-subtitle">
-            {tour.subtitle}
-          </p>
-          <div className="td-hero-meta">
-            <span>
-              <MapPin size={16} /> {tour.destination},{" "}
-              {tour.state}
-            </span>
-            <span>
-              <Clock size={16} /> {tour.duration.days} Days
-              / {tour.duration.nights} Nights
-            </span>
-            <span>
-              <Users size={16} /> {tour.groupSize.min}-
-              {tour.groupSize.max} people
-            </span>
-            <span>
-              <Star size={16} fill="currentColor" />{" "}
-              {tour.rating} ({tour.reviewCount} reviews)
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <section className="td-main container section">
-        <div className="td-layout">
-          {/* Left Content */}
-          <div className="td-content">
-            {/* Tabs */}
-            <div className="td-tabs" role="tablist">
-              {(
-                [
-                  "overview",
-                  "itinerary",
-                  "inclusions",
-                  "dates",
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab}
-                  role="tab"
-                  aria-selected={activeTab === tab}
-                  className={`td-tab ${activeTab === tab ? "active" : ""}`}
-                  onClick={() => setActiveTab(tab)}>
-                  {tab.charAt(0).toUpperCase() +
-                    tab.slice(1)}
+              <div className="td-header-actions">
+                <button type="button" className="action-pill-btn" aria-label="Share">
+                  <Share2 size={16} /> <span>Share</span>
                 </button>
+                <button 
+                  type="button" 
+                  className={`action-pill-btn ${isWishlisted ? 'liked' : ''}`}
+                  onClick={() => toggleWishlist(tour.id)}
+                  aria-label="Wishlist"
+                >
+                  <Heart size={16} fill={isWishlisted ? '#FF385C' : 'none'} color={isWishlisted ? '#FF385C' : '#222'} /> 
+                  <span>{isWishlisted ? 'Saved' : 'Save'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* AIRBNB 5-PHOTO MOSAIC GRID */}
+          <div className="airbnb-photo-grid">
+            <div className="photo-main-box" onClick={() => { setActivePhotoIdx(0); setShowPhotoLightbox(true); }}>
+              <img src={allPhotos[0]} alt={tour.title} className="mosaic-img" />
+            </div>
+
+            <div className="photo-thumbnails-grid">
+              {allPhotos.slice(1, 5).map((imgUrl, i) => (
+                <div 
+                  key={i} 
+                  className="photo-thumb-box"
+                  onClick={() => { setActivePhotoIdx(i + 1); setShowPhotoLightbox(true); }}
+                >
+                  <img src={imgUrl} alt={`${tour.title} ${i + 2}`} className="mosaic-img" />
+                </div>
               ))}
             </div>
 
-            {/* Tab Content */}
-            {activeTab === "overview" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="td-panel">
-                <h2>About This Tour</h2>
-                <p className="td-description">
-                  {tour.description}
-                </p>
+            <button 
+              type="button" 
+              className="show-all-photos-btn"
+              onClick={() => setShowPhotoLightbox(true)}
+            >
+              <Grid size={16} /> <span>Show all {allPhotos.length} photos</span>
+            </button>
+          </div>
 
-                <h3>Tour Highlights</h3>
-                <ul className="td-highlights">
-                  {tour.highlights.map((h, i) => (
-                    <li key={i}>
-                      <Check size={16} /> {h}
-                    </li>
+          {/* MAIN DETAILS & STICKY BOOKING SIDEBAR */}
+          <div className="td-body-layout">
+            {/* LEFT MAIN DETAILS */}
+            <div className="td-main-content">
+              {/* HOST & DURATION INFO */}
+              <div className="td-host-banner">
+                <div className="host-text">
+                  <h2 className="host-title">Stay & Yatra hosted by Divine Voyages Pandits</h2>
+                  <p className="host-meta">
+                    {tour.duration.days} days • {tour.duration.nights} nights • Max {tour.groupSize.max} pilgrims • {tour.difficulty} difficulty
+                  </p>
+                </div>
+                <div className="host-avatar-ring">
+                  <UserCheck size={28} />
+                </div>
+              </div>
+
+              <div className="td-section-divider" />
+
+              {/* HIGHLIGHTS / AMENITIES CHECKLIST */}
+              <div className="td-highlights-section">
+                <h3 className="section-block-title">Key Sacred Highlights</h3>
+                <div className="highlights-grid">
+                  {tour.highlights.map((item, idx) => (
+                    <div key={idx} className="highlight-item-card">
+                      <div className="check-icon-wrap">
+                        <Check size={16} />
+                      </div>
+                      <span>{item}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
+              </div>
 
-                <div className="td-info-cards">
-                  <div className="td-info-card">
-                    <Building2 size={20} />
+              <div className="td-section-divider" />
+
+              {/* ABOUT / DESCRIPTION */}
+              <div className="td-about-section">
+                <h3 className="section-block-title">About this Sacred Experience</h3>
+                <p className="description-paragraph">{tour.description}</p>
+                <div className="specs-row">
+                  <div className="spec-box">
+                    <Building2 size={20} className="spec-icon" />
                     <div>
-                      <strong>Accommodation</strong>
+                      <strong>Stay & Accommodation</strong>
                       <p>{tour.accommodation}</p>
                     </div>
                   </div>
-                  <div className="td-info-card">
-                    <Bus size={20} />
+                  <div className="spec-box">
+                    <Bus size={20} className="spec-icon" />
                     <div>
                       <strong>Transport</strong>
                       <p>{tour.transport}</p>
                     </div>
                   </div>
-                  <div className="td-info-card">
-                    <Utensils size={20} />
+                  <div className="spec-box">
+                    <Utensils size={20} className="spec-icon" />
                     <div>
-                      <strong>Meals</strong>
+                      <strong>Sattvic Meals</strong>
                       <p>{tour.meals}</p>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            )}
+              </div>
 
-            {activeTab === "itinerary" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="td-panel">
-                <h2>Day-wise Itinerary</h2>
-                <div className="td-itinerary">
+              <div className="td-section-divider" />
+
+              {/* VISUAL ITINERARY TIMELINE WITH IMAGE CARDS */}
+              <div className="td-itinerary-section">
+                <h3 className="section-block-title">Day-by-Day Journey Itinerary</h3>
+                <div className="visual-itinerary-list">
                   {tour.itinerary.map((day) => (
-                    <div
-                      key={day.day}
-                      className={`td-day ${openDay === day.day ? "open" : ""}`}>
-                      <button
-                        className="td-day-header"
-                        onClick={() =>
-                          setOpenDay(
-                            openDay === day.day
-                              ? null
-                              : day.day,
-                          )
-                        }>
-                        <div className="td-day-number">
-                          Day {day.day}
-                        </div>
-                        <div className="td-day-title">
-                          {day.title}
-                        </div>
-                        {openDay === day.day ? (
-                          <ChevronUp size={18} />
-                        ) : (
-                          <ChevronDown size={18} />
-                        )}
-                      </button>
-                      {openDay === day.day && (
-                        <div className="td-day-content">
-                          <p>{day.description}</p>
-                          {day.meals.length > 0 && (
-                            <div className="td-day-meals">
-                              <Utensils size={14} />{" "}
-                              {day.meals.join(" • ")}
-                            </div>
-                          )}
-                          {day.accommodation && (
-                            <div className="td-day-stay">
-                              <Building2 size={14} />{" "}
-                              {day.accommodation}
-                            </div>
-                          )}
+                    <div key={day.day} className="itinerary-card">
+                      {day.image && (
+                        <div className="itinerary-card-img-wrap">
+                          <img src={day.image} alt={day.title} className="itinerary-img" loading="lazy" />
+                          <span className="day-badge">Day {day.day}</span>
                         </div>
                       )}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === "inclusions" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="td-panel">
-                <div className="td-inclusions-grid">
-                  <div>
-                    <h3 className="td-inc-title td-inc-included">
-                      ✅ What's Included
-                    </h3>
-                    <ul className="td-inc-list">
-                      {tour.inclusions.map((item, i) => (
-                        <li key={i}>
-                          <Check
-                            size={16}
-                            className="td-inc-check"
-                          />{" "}
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="td-inc-title td-inc-excluded">
-                      ❌ What's Not Included
-                    </h3>
-                    <ul className="td-inc-list">
-                      {tour.exclusions.map((item, i) => (
-                        <li key={i}>
-                          <X
-                            size={16}
-                            className="td-inc-cross"
-                          />{" "}
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {activeTab === "dates" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="td-panel">
-                <h2>Available Dates</h2>
-                <div className="td-dates">
-                  {tour.availableDates.map((date, i) => (
-                    <div
-                      key={i}
-                      className={`td-date-card ${date.status === "Sold Out" ? "sold-out" : ""}`}>
-                      <div className="td-date-info">
-                        <Calendar size={16} />
-                        <span>
-                          {new Date(
-                            date.startDate,
-                          ).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}{" "}
-                          —{" "}
-                          {new Date(
-                            date.endDate,
-                          ).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <div className="td-date-spots">
-                        <span
-                          className={`td-date-status status-${date.status.toLowerCase().replace(" ", "-")}`}>
-                          {date.status}
-                        </span>
-                        {date.status !== "Sold Out" && (
-                          <span className="td-date-left">
-                            {date.spotsLeft} spots left
-                          </span>
+                      <div className="itinerary-card-body">
+                        {!day.image && <span className="day-badge-inline">Day {day.day}</span>}
+                        <h4 className="day-title-text">{day.title}</h4>
+                        <p className="day-desc-text">{day.description}</p>
+                        {day.meals.length > 0 && (
+                          <div className="day-meal-tag">
+                            <Utensils size={14} /> <span>{day.meals.join(' • ')}</span>
+                          </div>
+                        )}
+                        {day.accommodation && (
+                          <div className="day-stay-tag">
+                            <Building2 size={14} /> <span>{day.accommodation}</span>
+                          </div>
                         )}
                       </div>
-                      <Button
-                        variant={
-                          date.status === "Sold Out"
-                            ? "ghost"
-                            : "primary"
-                        }
-                        size="sm"
-                        disabled={
-                          date.status === "Sold Out"
-                        }>
-                        {date.status === "Sold Out"
-                          ? "Sold Out"
-                          : "Book Now"}
-                      </Button>
                     </div>
                   ))}
                 </div>
-              </motion.div>
-            )}
-          </div>
+              </div>
 
-          {/* Sidebar */}
-          <aside className="td-sidebar">
-            <div className="td-price-card">
-              <div className="td-price-details">
-                <div className="td-price-detail">
-                  <Clock size={16} /> {tour.duration.days}{" "}
-                  Days / {tour.duration.nights} Nights
-                </div>
-                <div className="td-price-detail">
-                  <Users size={16} /> Group size:{" "}
-                  {tour.groupSize.min}-{tour.groupSize.max}
-                </div>
-                <div className="td-price-detail">
-                  <Utensils size={16} /> {tour.meals}
+              <div className="td-section-divider" />
+
+              {/* INCLUSIONS & EXCLUSIONS */}
+              <div className="td-inclusions-section">
+                <h3 className="section-block-title">What's Included & Excluded</h3>
+                <div className="inc-exc-grid">
+                  <div className="inc-box">
+                    <h4 className="inc-title">✅ Included</h4>
+                    <ul>
+                      {tour.inclusions.map((inc, i) => (
+                        <li key={i}><Check size={15} color="#16a34a" /> {inc}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="exc-box">
+                    <h4 className="exc-title">❌ Excluded</h4>
+                    <ul>
+                      {tour.exclusions.map((exc, i) => (
+                        <li key={i}><X size={15} color="#dc2626" /> {exc}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                onClick={() => setIsModalOpen(true)}>
-                Enquire Now
-              </Button>
-              <a
-                href={`tel:${SITE_CONFIG.phone}`}
-                className="td-price-call">
-                <Phone size={16} /> Call:{" "}
-                {SITE_CONFIG.phone}
-              </a>
-            </div>
-          </aside>
-        </div>
-      </section>
 
-      {/* Related Tours */}
-      {relatedTours.length > 0 && (
-        <section
-          className="section"
-          style={{ background: "var(--cream)" }}>
-          <div className="container">
-            <h2 className="section-title">Similar Tours</h2>
-            <p className="section-subtitle">
-              Other {tour.category} tours you might love
-            </p>
-            <div className="tours-grid">
-              {relatedTours.map((t) => (
-                <TourCard key={t.id} tour={t} />
+              <div className="td-section-divider" />
+
+              {/* REVIEWS & RATINGS BREAKDOWN */}
+              <div className="td-reviews-section">
+                <div className="reviews-header">
+                  <Star size={24} fill="#222" color="#222" />
+                  <h3>{tour.rating.toFixed(2)} • {tour.reviewCount} reviews</h3>
+                </div>
+
+                <div className="reviews-metrics-grid">
+                  <div className="metric-row">
+                    <span>Cleanliness & Hygiene</span>
+                    <div className="metric-bar"><div className="bar-fill" style={{ width: '98%' }} /></div>
+                    <span>4.9</span>
+                  </div>
+                  <div className="metric-row">
+                    <span>Accuracy & Guidance</span>
+                    <div className="metric-bar"><div className="bar-fill" style={{ width: '96%' }} /></div>
+                    <span>4.9</span>
+                  </div>
+                  <div className="metric-row">
+                    <span>Communication & Pandits</span>
+                    <div className="metric-bar"><div className="bar-fill" style={{ width: '100%' }} /></div>
+                    <span>5.0</span>
+                  </div>
+                  <div className="metric-row">
+                    <span>VIP Darshan & Location</span>
+                    <div className="metric-bar"><div className="bar-fill" style={{ width: '95%' }} /></div>
+                    <span>4.8</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT STICKY AIRBNB RESERVATION SIDEBAR */}
+            <aside className="td-sidebar-sticky">
+              <div className="airbnb-reservation-card">
+                <div className="res-price-line">
+                  <div>
+                    <span className="res-amount">{tour.price.currency}{tour.price.discounted.toLocaleString('en-IN')}</span>
+                    <span className="res-unit"> / person</span>
+                  </div>
+                  <div className="res-rating-small">
+                    <Star size={14} fill="#222" />
+                    <span>{tour.rating.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                {/* DATE & GUEST INPUT BOX */}
+                <div className="res-inputs-box">
+                  <div className="res-input-row">
+                    <label className="res-label">SELECT BATCH DATE</label>
+                    <select 
+                      value={selectedDateIndex} 
+                      onChange={(e) => setSelectedDateIndex(Number(e.target.value))}
+                      className="res-select"
+                    >
+                      {tour.availableDates.map((date, idx) => (
+                        <option key={idx} value={idx} disabled={date.status === 'Sold Out'}>
+                          {date.startDate} to {date.endDate} ({date.status})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="res-input-row">
+                    <label className="res-label">GUESTS</label>
+                    <div className="res-guest-select">
+                      <span>{guestCount} Guest{guestCount > 1 ? 's' : ''}</span>
+                      <div className="guest-controls">
+                        <button 
+                          type="button" 
+                          disabled={guestCount <= 1} 
+                          onClick={() => setGuestCount(Math.max(1, guestCount - 1))}
+                        >-</button>
+                        <button 
+                          type="button" 
+                          onClick={() => setGuestCount(guestCount + 1)}
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RESERVE BUTTON */}
+                <button 
+                  type="button" 
+                  className="airbnb-reserve-btn"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  Reserve / Enquire Now
+                </button>
+                <p className="res-disclaimer">You won't be charged yet</p>
+
+                {/* BREAKDOWN */}
+                <div className="res-breakdown">
+                  <div className="breakdown-line">
+                    <span>{tour.price.currency}{basePrice.toLocaleString('en-IN')} x {guestCount} guest{guestCount > 1 ? 's' : ''}</span>
+                    <span>{tour.price.currency}{totalPrice.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="breakdown-line">
+                    <span>VIP Darshan & Guide Arrangement</span>
+                    <span className="free-tag">Included</span>
+                  </div>
+                  <div className="breakdown-line">
+                    <span>GST & Service Permit</span>
+                    <span>Included</span>
+                  </div>
+                  <div className="breakdown-divider" />
+                  <div className="breakdown-line total-line">
+                    <span>Total Package</span>
+                    <span>{tour.price.currency}{totalPrice.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <div className="res-phone-help">
+                  <Phone size={16} />
+                  <span>Call Us: {SITE_CONFIG.phone}</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          {/* SIMILAR TOURS */}
+          {relatedTours.length > 0 && (
+            <div className="td-related-section">
+              <h2 className="section-block-title">Similar Sacred Stays You Might Like</h2>
+              <div className="airbnb-listings-grid">
+                {relatedTours.map((t) => (
+                  <ListingCard key={t.id} tour={t} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* PHOTO LIGHTBOX MODAL */}
+      {showPhotoLightbox && (
+        <div className="photo-lightbox-modal">
+          <button 
+            type="button" 
+            className="lightbox-close-btn"
+            onClick={() => setShowPhotoLightbox(false)}
+          >
+            <X size={24} />
+          </button>
+          <div className="lightbox-content">
+            <img src={allPhotos[activePhotoIdx]} alt="Full view" className="lightbox-full-img" />
+            <div className="lightbox-nav-bar">
+              {allPhotos.map((img, idx) => (
+                <img 
+                  key={idx} 
+                  src={img} 
+                  alt="Thumb" 
+                  className={`lightbox-thumb ${idx === activePhotoIdx ? 'active' : ''}`}
+                  onClick={() => setActivePhotoIdx(idx)}
+                />
               ))}
             </div>
           </div>
-        </section>
+        </div>
       )}
 
-      {/* Mobile Sticky Booking Bar */}
-      <div className="td-mobile-sticky">
-        <Button
-          variant="primary"
-          style={{ flex: 1 }}
-          onClick={() => setIsModalOpen(true)}>
-          Enquire Now
-        </Button>
+      {/* MOBILE STICKY BAR */}
+      <div className="td-mobile-reserve-bar">
+        <div>
+          <span className="mobile-price">{tour.price.currency}{tour.price.discounted.toLocaleString('en-IN')}</span>
+          <span className="mobile-unit"> / person</span>
+        </div>
+        <button 
+          type="button" 
+          className="airbnb-reserve-btn mobile"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Reserve
+        </button>
       </div>
 
       <InquiryModal
@@ -448,22 +460,4 @@ export function TourDetails() {
       />
     </>
   );
-}
-
-function getCategoryGradient(category: string): string {
-  const gradients: Record<string, string> = {
-    "Char Dham": "#FF6B2B 0%, #FF8A50 50%, #FFD700 100%",
-    Jyotirlinga: "#5B1A2A 0%, #7A2E3F 50%, #D4A853 100%",
-    "Temple Tour": "#E55A1B 0%, #FF6B2B 50%, #FFD93D 100%",
-    "River Pilgrimage":
-      "#0EA5E9 0%, #38BDF8 50%, #7DD3FC 100%",
-    "Mountain Pilgrimage":
-      "#475569 0%, #64748B 50%, #94A3B8 100%",
-    "Festival Special":
-      "#D946EF 0%, #F0ABFC 50%, #FDE047 100%",
-    "South India": "#059669 0%, #10B981 50%, #34D399 100%",
-    "Buddhist Circuit":
-      "#F59E0B 0%, #FBBF24 50%, #FDE68A 100%",
-  };
-  return gradients[category] || "#FF6B2B 0%, #FF8A50 100%";
 }
